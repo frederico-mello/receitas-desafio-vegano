@@ -1,16 +1,18 @@
 from __future__ import annotations
 
 from sqlalchemy import (
-    Column,
-    String,
-    Float,
-    Integer,
-    DateTime,
-    ForeignKey,
     JSON,
+    Column,
+    DateTime,
+    Float,
+    ForeignKey,
+    Integer,
+    String,
     create_engine,
     func,
+    inspect,
 )
+from sqlalchemy.engine import Engine
 from sqlalchemy.orm import DeclarativeBase, relationship, sessionmaker
 
 
@@ -31,7 +33,9 @@ class RecipeModel(Base):
     version = Column(String, nullable=False, default="1")
     previous_version_id = Column(String, nullable=True)
     created_at = Column(DateTime, server_default=func.now(), nullable=False)
-    updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now(), nullable=False)
+    updated_at = Column(
+        DateTime, server_default=func.now(), onupdate=func.now(), nullable=False
+    )
 
     source = relationship("RecipeSourceModel", back_populates="recipes")
 
@@ -45,7 +49,9 @@ class RecipeSourceModel(Base):
     collected_at = Column(DateTime, server_default=func.now(), nullable=False)
     content_version = Column(String, nullable=False, default="1")
 
-    recipes = relationship("RecipeModel", back_populates="source", cascade="all, delete-orphan")
+    recipes = relationship(
+        "RecipeModel", back_populates="source", cascade="all, delete-orphan"
+    )
 
 
 class IngredientModel(Base):
@@ -71,7 +77,12 @@ class InventoryItemModel(Base):
     added_at = Column(DateTime, server_default=func.now(), nullable=False)
 
 
+def _should_create_schema(engine: Engine) -> bool:
+    return "alembic_version" not in inspect(engine).get_table_names()
+
+
 def create_session(db_url: str = "sqlite:///data/recipes.db"):
     engine = create_engine(db_url)
-    Base.metadata.create_all(engine)
+    if _should_create_schema(engine):
+        Base.metadata.create_all(engine)
     return sessionmaker(bind=engine)()

@@ -3,7 +3,7 @@ from __future__ import annotations
 import pytest
 
 from src.recipes.catalog.service import RecipeCatalog
-from src.recipes.domain import IngredientAmount, Restriction
+from src.recipes.domain import IngredientAmount
 
 
 @pytest.fixture
