@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 
 from src.recipes.domain import (
@@ -41,14 +41,14 @@ class RecipeCatalog:
                 id=RecipeSource(url=url, title=title).id,
                 url=url,
                 title=title,
-                collected_at=datetime.utcnow(),
+                collected_at=datetime.now(timezone.utc),
                 content_version="1",
             )
             self.session.add(source)
             self.session.flush()
         else:
             source.content_version = str(int(source.content_version) + 1)
-            source.collected_at = datetime.utcnow()
+            source.collected_at = datetime.now(timezone.utc)
 
         existing = (
             self.session.query(RecipeModel)
