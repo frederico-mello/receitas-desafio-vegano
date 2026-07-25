@@ -37,7 +37,8 @@ jobs:
         run: |
           pip install -e '.[dev]'
           pytest tests/test_alembic.py tests/test_database_migrations.py \
-            --cov=src/recipes/infra --cov-report=xml --cov-report=term
+            --cov=recipes.infra --cov-report=xml:coverage.xml --cov-report=term
+          ls -la coverage.xml
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarqube-scan-action@v5.0.0
