@@ -10,6 +10,8 @@ from typing import Sequence, Union
 from alembic import op
 import sqlalchemy as sa
 
+_CURRENT_TIMESTAMP_SQL = '(CURRENT_TIMESTAMP)'
+
 
 # revision identifiers, used by Alembic.
 revision: str = '95a0993676bb'
@@ -34,7 +36,7 @@ def upgrade() -> None:
     sa.Column('id', sa.String(), nullable=False),
     sa.Column('url', sa.String(), nullable=False),
     sa.Column('title', sa.String(), nullable=False),
-    sa.Column('collected_at', sa.DateTime(), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=False),
+    sa.Column('collected_at', sa.DateTime(), server_default=sa.text(_CURRENT_TIMESTAMP_SQL), nullable=False),
     sa.Column('content_version', sa.String(), nullable=False),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('url')
@@ -47,7 +49,7 @@ def upgrade() -> None:
     sa.Column('original_input', sa.String(), nullable=False),
     sa.Column('quantity', sa.Float(), nullable=True),
     sa.Column('unit', sa.String(), nullable=True),
-    sa.Column('added_at', sa.DateTime(), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=False),
+    sa.Column('added_at', sa.DateTime(), server_default=sa.text(_CURRENT_TIMESTAMP_SQL), nullable=False),
     sa.ForeignKeyConstraint(['ingredient_id'], ['ingredients.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
@@ -62,8 +64,8 @@ def upgrade() -> None:
     sa.Column('restrictions', sa.JSON(), nullable=False),
     sa.Column('version', sa.String(), nullable=False),
     sa.Column('previous_version_id', sa.String(), nullable=True),
-    sa.Column('created_at', sa.DateTime(), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=False),
-    sa.Column('updated_at', sa.DateTime(), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=False),
+    sa.Column('created_at', sa.DateTime(), server_default=sa.text(_CURRENT_TIMESTAMP_SQL), nullable=False),
+    sa.Column('updated_at', sa.DateTime(), server_default=sa.text(_CURRENT_TIMESTAMP_SQL), nullable=False),
     sa.ForeignKeyConstraint(['source_id'], ['recipe_sources.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
