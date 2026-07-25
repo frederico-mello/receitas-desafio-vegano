@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import os
+import shutil
 import subprocess
+import sys
 from pathlib import Path
 
 from sqlalchemy import create_engine, inspect, text
@@ -9,7 +11,19 @@ from sqlalchemy import create_engine, inspect, text
 from recipes.infra.database import Base, create_session
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-ALEMBIC_BIN = REPO_ROOT / ".venv" / "bin" / "alembic"
+
+
+def _alembic_bin() -> str:
+    candidate = shutil.which("alembic")
+    if candidate is not None:
+        return candidate
+    venv_bin = Path(sys.executable).parent / "alembic"
+    if venv_bin.is_file():
+        return str(venv_bin)
+    project_venv = REPO_ROOT / ".venv" / "bin" / "alembic"
+    if project_venv.is_file():
+        return str(project_venv)
+    raise RuntimeError("alembic not found on PATH or in .venv/bin")
 
 
 def _column_signature(engine, table_name: str) -> set[tuple[str, str, bool]]:
@@ -73,7 +87,7 @@ def test_schema_parity_between_alembic_upgrade_and_create_all(tmp_path):
     env = os.environ.copy()
     env["RECIPES_DB_URL"] = f"sqlite:///{migration_path}"
     result = subprocess.run(
-        [str(ALEMBIC_BIN), "upgrade", "head"],
+        [_alembic_bin(), "upgrade", "head"],
         cwd=REPO_ROOT,
         env=env,
         capture_output=True,

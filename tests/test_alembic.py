@@ -1,14 +1,29 @@
 from __future__ import annotations
 
 import os
+import shutil
 import subprocess
+import sys
 import tempfile
 from pathlib import Path
 
 from sqlalchemy import create_engine, inspect
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-ALEMBIC_BIN = REPO_ROOT / ".venv" / "bin" / "alembic"
+
+
+def _alembic_bin() -> str:
+    candidate = shutil.which("alembic")
+    if candidate is not None:
+        return candidate
+    venv_bin = Path(sys.executable).parent / "alembic"
+    if venv_bin.is_file():
+        return str(venv_bin)
+    project_venv = REPO_ROOT / ".venv" / "bin" / "alembic"
+    if project_venv.is_file():
+        return str(project_venv)
+    raise RuntimeError("alembic not found on PATH or in .venv/bin")
+
 
 EXPECTED_TABLES = {
     "recipes",
@@ -23,7 +38,7 @@ def _run_alembic(args: list[str], db_path: Path) -> subprocess.CompletedProcess:
     env = os.environ.copy()
     env["RECIPES_DB_URL"] = f"sqlite:///{db_path}"
     return subprocess.run(
-        [str(ALEMBIC_BIN), *args],
+        [_alembic_bin(), *args],
         cwd=REPO_ROOT,
         env=env,
         capture_output=True,
