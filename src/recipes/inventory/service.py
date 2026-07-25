@@ -50,23 +50,17 @@ class IngredientInventory:
         return ing
 
     def resolve_ingredient(self, name: str) -> Optional[Ingredient]:
-        model = (
-            self.session.query(IngredientModel)
-            .filter(
-                (IngredientModel.canonical_name == name)
-                | (IngredientModel.aliases.contains(name))
-            )
-            .first()
-        )
-        if model is None:
-            return None
-        return Ingredient(
-            id=model.id,
-            canonical_name=model.canonical_name,
-            display_name=model.display_name,
-            aliases=list(model.aliases),
-            restrictions=list(model.restrictions),
-        )
+        models = self.session.query(IngredientModel).all()
+        for m in models:
+            if m.canonical_name == name or name in (m.aliases or []):
+                return Ingredient(
+                    id=m.id,
+                    canonical_name=m.canonical_name,
+                    display_name=m.display_name,
+                    aliases=list(m.aliases),
+                    restrictions=list(m.restrictions),
+                )
+        return None
 
     def add_to_inventory(
         self,

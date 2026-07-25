@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from typing import Optional
 
@@ -53,7 +53,7 @@ class RecipeSource(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     url: str
     title: str
-    collected_at: datetime = Field(default_factory=datetime.utcnow)
+    collected_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     content_version: str = "1"
 
 
@@ -67,8 +67,8 @@ class Recipe(BaseModel):
     restrictions: list[Restriction] = Field(default_factory=list)
     version: str = "1"
     previous_version_id: Optional[str] = None
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
 class InventoryItem(BaseModel):
@@ -77,7 +77,7 @@ class InventoryItem(BaseModel):
     original_input: str
     quantity: Optional[float] = None
     unit: Optional[Unit] = None
-    added_at: datetime = Field(default_factory=datetime.utcnow)
+    added_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
 class PersonInventory(BaseModel):
