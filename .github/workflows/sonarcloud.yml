@@ -28,8 +28,20 @@ jobs:
           distribution: temurin
           java-version: 21
 
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install and test with coverage
+        run: |
+          pip install -e '.[dev]'
+          pytest tests/test_alembic.py tests/test_database_migrations.py \
+            --cov=recipes.infra --cov-report=xml:coverage.xml --cov-report=term
+          ls -la coverage.xml
+
       - name: SonarCloud Scan
-        uses: sonarsource/sonarqube-scan-action@v6
+        uses: SonarSource/sonarqube-scan-action@v5
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
