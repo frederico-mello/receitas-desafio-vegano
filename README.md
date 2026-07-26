@@ -43,20 +43,24 @@ tests/              Testes de catalogo, inventario, recomendacoes e assistente
 ## Requisitos
 
 - Python 3.11 ou superior
+- `make` (GNU Make)
 
 ## Instalacao
 
 ```bash
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -e ".[dev]"
+# Setup completo + testes em um comando
+make dev
+
+# Ou passo a passo
+make install   # configura venv + instala dependencias
+make setup-db  # prepara diretorio data/
+make test      # executa pytest
+make clean     # limpa .venv e __pycache__
 ```
 
 ## Testes
 
-```bash
-PYTHONPATH=src pytest
-```
+O comando `make test` (ou `make dev`) executa a suite via pytest.
 
 O conjunto atual contem 25 testes cobrindo ingestao e versionamento de receitas,
 normalizacao de ingredientes, inventario, recomendacoes, atribuicao de fontes
