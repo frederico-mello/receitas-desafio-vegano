@@ -81,6 +81,7 @@ class IngredientInventory:
             original_input=ingredient_name,
             quantity=quantity,
             unit=unit,
+            restrictions=list(resolved.restrictions),
         )
         model = InventoryItemModel(
             id=item.ingredient_id,
@@ -90,6 +91,7 @@ class IngredientInventory:
             original_input=ingredient_name,
             quantity=quantity,
             unit=unit.value if unit else None,
+            restrictions=list(resolved.restrictions),
         )
         self.session.add(model)
         self.session.commit()
@@ -109,6 +111,7 @@ class IngredientInventory:
                 quantity=m.quantity,
                 unit=Unit(m.unit) if m.unit else None,
                 added_at=m.added_at,
+                restrictions=m.restrictions,
             )
             for m in models
         ]
