@@ -75,6 +75,7 @@ class InventoryItemModel(Base):
     quantity = Column(Float, nullable=True)
     unit = Column(String, nullable=True)
     added_at = Column(DateTime, server_default=func.now(), nullable=False)
+    restrictions = Column(JSON, nullable=False, default=list)
 
 
 def _should_create_schema(engine: Engine) -> bool:

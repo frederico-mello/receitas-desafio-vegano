@@ -78,6 +78,7 @@ class InventoryItem(BaseModel):
     quantity: Optional[float] = None
     unit: Optional[Unit] = None
     added_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    restrictions: list[Restriction] = Field(default_factory=list)
 
 
 class PersonInventory(BaseModel):
