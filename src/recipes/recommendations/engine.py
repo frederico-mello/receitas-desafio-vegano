@@ -28,7 +28,7 @@ class RecommendationEngine:
     def recommend(self, person_id: str) -> list[RecommendationResult] | NoMatchResult:
         inv = self.inventory.list_inventory(person_id)
         available_ids = {i.ingredient_id for i in inv.items}
-        available_names = {i.canonical_name for i in inv.items}
+        available_restrictions = {r.value for i in inv.items for r in i.restrictions}
 
         recipes = self.catalog.list_all()
         ranked: list[RecommendationRanking] = []
@@ -45,7 +45,7 @@ class RecommendationEngine:
                     missing.append(ing.ingredient_id)
 
             for r in recipe.restrictions:
-                if r.value in available_names:
+                if r.value not in available_restrictions:
                     conflicts.append(r.value)
 
             total = len(recipe.ingredients)
